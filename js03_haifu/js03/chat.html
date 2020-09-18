@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Chatアプリ</title>
+
+<link rel="stylesheet" href="/js03/css/style.css">
+
+</head>
+<body>
+
+ 
+
+<!-- コンテンツ表示画面 -->
+<div class="design_align"> 
+  <h1>チャットアプリ</h1>
+  <div id="output" style="height: 300px; width:400px; overflow: auto; border: 1px solid red;"></div>
+  
+
+  <div class="form-position">
+    <div  >名前: <input type="text" id="uname"></div>
+    <div>
+        <textarea id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+    </div>
+  </div>
+
+  <h2>アイコン選択</h2>
+  <ul class="pics-align">
+    <li class="imgs" data-img="0"> <img src="/js03/imgs/buke.png" width="100"> </li>
+    <li class="imgs" data-img="1"> <img src="/js03/imgs/tuku.jpg" width="100"> </li>
+    <li class="imgs" data-img="2"> <img src="/js03/imgs/caram.png" width="100"> </li>
+
+  </ul>
+
+
+</div>
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+
+
+<!--** 以下Firebase **-->
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.database().ref(); //.ref()はユニークキーを自動で振ってくださいの意味
+
+  // 関数定義 
+  // 関数はラップするもの
+ 
+
+
+  // アイコン処理
+  let d = 0;
+  const img = ["buke.png", "tuku.jpg", "caram.png"];
+  $(".imgs").on("click", function(){
+      d = $(this).attr("data-img");
+      
+    });
+
+  // 送信
+  function send(){
+  const uname = $("#uname").val();
+      const text = $("#text").val();      
+      const date = new Date();
+      const date1 =       
+        date.getFullYear() + "年" + 
+				(date.getMonth() + 1)  + "月" + 
+				date.getDate() + "日" + 
+				date.getHours() + "時" + 
+				date.getMinutes() + "分" + 
+				date.getSeconds() + "秒" ;   // 現在日時
+        
+      const msg = {
+        uname:uname,
+        text:text,
+        date1:date1,
+        icon:d
+      }
+      ref.push(msg); 
+      
+    };
+
+
+
+  //文字を送信
+
+  $("#send").on("click", function(){    
+    send();
+    
+    const psconsole = $('#output');
+    psconsole.scrollTop(
+        psconsole[0].scrollHeight - psconsole.height()
+    );
+
+    // const uname = $("#uname").val();
+    // const text = $("#text").val();
+    // const msg = {
+    //   uname:uname,
+    //   text:text
+    //  }
+    // ref.push(msg); //set=決まったID名、Key名を生成、Pushはユニーク
+    // ref.push(msg); //set=決まったID名、Key名を生成、Pushはユニーク
+    // firebase.database().ref().push(msg); と同じ
+
+  });
+
+  //受信処理
+  ref.on("child_added", function(data){
+    const v = data.val(); //送信されたオブジェクトを取得
+    const k = data.key; //ユニークキーの取得
+    const h = '<dl id="'+k+'"><dt><img src="imgs/'+img[v.icon]+'" width="50"><br>'+ v.uname + '</dt><dd>'+ v.text + '</dd></dl>'; 
+    console.log(h);
+    $("#output").append(h);
+
+  });
+ 
+
+
+
+
+
+//   <div>
+// <img src="imgs/tuku.jpg" width="50">
+// <img src="/js03/imgs/buke.png" width="100">
+// buke.png
+// </div>
+
+
+
+  // const h = '<p>'+v.uname+'<br><img src="imgs/"+img[v.icon]+"width="50"><br>'+v.text+'<br>'+v.date1+'</dl>'; 
+  //   $("#output").append(h);
+
+
+  // イベント情報取得(enterkey)
+  $("#text").on("keydown", function(e){      //eはeventの省略形
+    console.log(e);
+    if(e.keyCode == 13){
+      send();
+      const psconsole = $('#output');
+      psconsole.scrollTop(
+        psconsole[0].scrollHeight - psconsole.height()
+    );
+    }
+    
+  });
+
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
